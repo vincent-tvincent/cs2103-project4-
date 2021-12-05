@@ -27,9 +27,6 @@ public class SimpleExpressionParser implements ExpressionParser {
 	}
 	
 	protected Expression parseExpression (String str) {
-		Expression expression;
-
-		// TODO implement me
 		return parseS(str);
 	}
 
@@ -53,6 +50,7 @@ public class SimpleExpressionParser implements ExpressionParser {
 			// S + M
 			Operator op = new Operator('+');
 
+			// TODO: check substring
 			Expression first = parseS(str.substring(plus));
 			Expression second = parseM(str.substring(0, plus));
 
@@ -90,6 +88,7 @@ public class SimpleExpressionParser implements ExpressionParser {
 			// M * P
 			Operator op = new Operator('*');
 
+			// TODO: check substring
 			Expression first = parseS(str.substring(mult));
 			Expression second = parseM(str.substring(0, mult));
 
@@ -145,6 +144,7 @@ public class SimpleExpressionParser implements ExpressionParser {
 			return parseS(str);
 		} else {
 			// L
+			// TODO: check ascii
 			for(int ascii : chars) {
 				// if not [a-z] || [A-Z] || [0-9]
 				if(!(((ascii >= 97 && ascii <= 122) || (ascii >= 65 && ascii <= 90)) || (ascii >= 48 && ascii <= 57))){
