@@ -28,8 +28,130 @@ public class SimpleExpressionParser implements ExpressionParser {
 	
 	protected Expression parseExpression (String str) {
 		Expression expression;
-		
+
 		// TODO implement me
-		return null;
+		return parseS(str);
+	}
+
+	private Expression parseS(String str) {
+
+		char[] chars = str.toCharArray();
+		// find +
+		int plus = -1;
+		for (int i = 0; i < chars.length - 1; i++) {
+			char c = chars[i];
+			if(c == '+') {
+				plus = i;
+				break;
+			}
+		}
+
+		if(plus == -1) {
+			// M
+			return parseM(str);
+		} else {
+			// S + M
+			Operator op = new Operator('+');
+
+			Expression first = parseS(str.substring(plus));
+			Expression second = parseM(str.substring(0, plus));
+
+			if(first == null || second == null) {
+				return null;
+			}
+
+			first.setParent(op);
+			second.setParent(op);
+
+			op.addSubexpression(first);
+			op.addSubexpression(second);
+
+			return op;
+		}
+	}
+
+	private Expression parseM(String str) {
+
+		char[] chars = str.toCharArray();
+		// find *
+		int mult = -1;
+		for (int i = 0; i < chars.length - 1; i++) {
+			char c = chars[i];
+			if(c == '*') {
+				mult = i;
+				break;
+			}
+		}
+
+		if(mult == -1) {
+			// P
+			return parseP(str);
+		} else {
+			// M * P
+			Operator op = new Operator('*');
+
+			Expression first = parseS(str.substring(mult));
+			Expression second = parseM(str.substring(0, mult));
+
+			if(first == null || second == null) {
+				return null;
+			}
+
+			first.setParent(op);
+			second.setParent(op);
+
+			op.addSubexpression(first);
+			op.addSubexpression(second);
+
+			return op;
+		}
+	}
+
+	private Expression parseP(String str) {
+
+		char[] chars = str.toCharArray();
+		// find (
+		int start = -1;
+		int end = -1;
+		int count = 0;
+		for (int i = 0; i < chars.length - 1; i++) {
+			char c = chars[i];
+			if(c == '(') {
+				if(start != -1) {
+					count++;
+				} else {
+					start = i;
+				}
+			} else if (c == ')') {
+				if(start != -1) {
+					if(count > 0) {
+						count--;
+					} else {
+						end = i;
+						break;
+					}
+				} else {
+					return null;
+				}
+			}
+		}
+
+		if(start != -1 && end == -1) {
+			return null;
+		}
+
+		if(end == -1) {
+			// (S)
+			return parseS(str);
+		} else {
+			// L
+			for(int ascii : chars) {
+				// if not [a-z] || [A-Z] || [0-9]
+				if(!(((ascii >= 97 && ascii <= 122) || (ascii >= 65 && ascii <= 90)) || (ascii >= 48 && ascii <= 57))){
+					return null;
+				}
+			}
+			return new Literal(str);
+		}
 	}
 }
