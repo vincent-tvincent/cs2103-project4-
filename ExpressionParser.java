@@ -1,4 +1,4 @@
-interface ExpressionParser {
+interface ExpressionParser{
 	/**
 	 * Attempts to create an expression tree -- flattened as much as possible -- from the specified String.
          * Throws a ExpressionParseException if the specified string cannot be parsed.
