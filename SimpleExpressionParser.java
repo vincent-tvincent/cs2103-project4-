@@ -159,10 +159,11 @@ public class SimpleExpressionParser implements ExpressionParser {
 				}
 			} else if (c == ')') {
 				if(start != -1) {
-					if(count > 1) {
+					if(count > 0) {
 						count--;
 					} else {
 						end = i;
+						System.out.println(count);
 						System.out.println("end: " + i);
 						break;
 					}
@@ -177,6 +178,18 @@ public class SimpleExpressionParser implements ExpressionParser {
 		}
 
 		if(end != -1) {
+			if(end != chars.length - 1) {
+				// (S) + S
+				System.out.println("(S)+S");
+
+				char next = chars[end + 1];
+				if(next == ')') {
+					return null;
+				}
+
+				return parseS(str.substring(start));
+			}
+
 			// (S)
 			System.out.println("(S)");
 			Operator op = new Operator("()");
@@ -188,6 +201,7 @@ public class SimpleExpressionParser implements ExpressionParser {
 			}
 			e.setParent(op);
 			op.addSubexpression(e);
+
 			return op;
 		} else {
 			for(int ascii : chars) {

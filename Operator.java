@@ -69,8 +69,9 @@ public class Operator implements CompoundExpression {
             s.append("\n");
             s.append(e.convertToString(indentLevel));
         }
-        // TODO: fix new line addition
-        s.append("\n");
+        if(_parent == null) {
+            s.append("\n");
+        }
         return s.toString();
     }
 }
