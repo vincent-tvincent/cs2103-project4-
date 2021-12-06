@@ -52,7 +52,7 @@ public class Operator implements CompoundExpression {
                 _parent.addSubexpression(subArray[i]);
                 subArray[i].setParent(_parent);
 
-                removeSubexpression(this);
+                _parent.removeSubexpression(this);
             }
         }
     }

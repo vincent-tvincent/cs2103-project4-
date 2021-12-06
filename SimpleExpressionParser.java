@@ -36,7 +36,7 @@ public class SimpleExpressionParser implements ExpressionParser {
 		// find + outside of ()
 		int plus = -1;
 		int pDepth = 0;
-		for (int i = 0; i < chars.length - 1; i++) {
+		for (int i = 0; i < chars.length; i++) {
 			char c = chars[i];
 			if(c == '(') {
 				pDepth++;
@@ -48,6 +48,12 @@ public class SimpleExpressionParser implements ExpressionParser {
 			} else if(c == '+') {
 				if(pDepth == 0) {
 					plus = i;
+
+					// if + has nothing to left or right
+					if(i == 0 || i == chars.length - 1) {
+						return null;
+					}
+
 					break;
 				}
 			}
@@ -166,7 +172,7 @@ public class SimpleExpressionParser implements ExpressionParser {
 			}
 		}
 
-		if(start != -1 && end == -1) {
+		if(start != -1 && end == -1 || start == end -1) {
 			return null;
 		}
 
