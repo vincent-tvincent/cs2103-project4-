@@ -37,7 +37,7 @@ public class P extends abstractCompoundExpression{
     public String convertToString(int indentLevel) {
         abstractExpression se = (abstractExpression) getSubExpression(SorL());
         se.indent = indent + 1;
-        output.append("\n" + se.convertToString(indent + 1));
+        output.append("\n" + se.convertToString(se.indent));
         return output.toString();
     }
 
