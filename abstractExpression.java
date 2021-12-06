@@ -3,6 +3,7 @@ public abstract class abstractExpression implements Expression{
     String ExpressionType;
     StringBuffer output;
     public int indent;
+    //test for change
     public abstractExpression(CompoundExpression parent){
         ParentExpression = (abstractCompoundExpression) parent;
         indent = 1;
