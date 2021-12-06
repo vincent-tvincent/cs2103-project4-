@@ -47,7 +47,8 @@ public class Operator implements CompoundExpression {
         for (int i = 0; i < subArray.length; i++) {
             subArray[i].flatten();
         }
-        if(_parent != null && _parent.getIdentifier().equals(getIdentifier())) {
+
+        if(_parent != null && _parent.getIdentifier().equals(_identifier)) {
             for (int i = 0; i < subArray.length; i++) {
                 _parent.addSubexpression(subArray[i]);
                 subArray[i].setParent(_parent);
@@ -59,6 +60,7 @@ public class Operator implements CompoundExpression {
 
     @Override
     public String convertToString(int indentLevel) {
+        flatten();
         StringBuffer s = new StringBuffer();
 
         Expression.indent(s, indentLevel);
