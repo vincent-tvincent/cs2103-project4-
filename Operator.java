@@ -41,13 +41,16 @@ public class Operator implements CompoundExpression {
 
     @Override
     public void flatten() {
-        for(Expression e : _subexpresions) {
-            e.flatten();
+        Expression[] subArray = new Expression[_subexpresions.size()];
+        _subexpresions.toArray(subArray);
+
+        for (int i = 0; i < subArray.length; i++) {
+            subArray[i].flatten();
         }
         if(_parent != null && _parent.getIdentifier().equals(getIdentifier())) {
-            for(Expression e : _subexpresions) {
-                _parent.addSubexpression(e);
-                e.setParent(_parent);
+            for (int i = 0; i < subArray.length; i++) {
+                _parent.addSubexpression(subArray[i]);
+                subArray[i].setParent(_parent);
 
                 removeSubexpression(this);
             }
