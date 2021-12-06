@@ -27,32 +27,47 @@ public class SimpleExpressionParser implements ExpressionParser {
 	}
 	
 	protected Expression parseExpression (String str) {
+		System.out.println("S");
 		return parseS(str);
 	}
 
 	private Expression parseS(String str) {
-
 		char[] chars = str.toCharArray();
-		// find +
+		// find + outside of ()
 		int plus = -1;
+		int pDepth = 0;
 		for (int i = 0; i < chars.length - 1; i++) {
 			char c = chars[i];
-			if(c == '+') {
-				plus = i;
-				break;
+			if(c == '(') {
+				pDepth++;
+			} else if(c == ')') {
+				pDepth--;
+				if(pDepth < 0) {
+					return null;
+				}
+			} else if(c == '+') {
+				if(pDepth == 0) {
+					plus = i;
+					break;
+				}
 			}
 		}
 
 		if(plus == -1) {
 			// M
+			System.out.println("M");
 			return parseM(str);
 		} else {
 			// S + M
-			Operator op = new Operator('+');
+			System.out.println("S + M");
+			Operator op = new Operator("+");
 
-			// TODO: check substring
-			Expression first = parseS(str.substring(plus));
-			Expression second = parseM(str.substring(0, plus));
+			String s1 = str.substring(0, plus);
+			System.out.println("S1:" + s1);
+			String s2 = str.substring(plus + 1);
+			System.out.println("S2:" + s2);
+			Expression first = parseS(s1);
+			Expression second = parseM(s2);
 
 			if(first == null || second == null) {
 				return null;
@@ -71,27 +86,41 @@ public class SimpleExpressionParser implements ExpressionParser {
 	private Expression parseM(String str) {
 
 		char[] chars = str.toCharArray();
-		// find *
+		// find * outside of ();
 		int mult = -1;
+		int pDepth = 0;
 		for (int i = 0; i < chars.length - 1; i++) {
 			char c = chars[i];
-			if(c == '*') {
-				mult = i;
-				break;
+			if(c == '(') {
+				pDepth++;
+			} else if(c == ')') {
+				pDepth--;
+				if(pDepth < 0) {
+					return null;
+				}
+			} else if(c == '*') {
+				if(pDepth == 0) {
+					mult = i;
+					break;
+				}
 			}
 		}
 
 		if(mult == -1) {
 			// P
+			System.out.println("P");
 			return parseP(str);
 		} else {
 			// M * P
-			Operator op = new Operator('*');
+			System.out.println("M * P");
+			Operator op = new Operator("*");
 
-			// TODO: check substring
-			Expression first = parseS(str.substring(mult));
-			Expression second = parseM(str.substring(0, mult));
-
+			String s1 = str.substring(0, mult);
+			System.out.println("S1:" + s1);
+			String s2 = str.substring(mult + 1);
+			System.out.println("S2:" + s2);
+			Expression first = parseS(s1);
+			Expression second = parseM(s2);
 			if(first == null || second == null) {
 				return null;
 			}
@@ -113,20 +142,22 @@ public class SimpleExpressionParser implements ExpressionParser {
 		int start = -1;
 		int end = -1;
 		int count = 0;
-		for (int i = 0; i < chars.length - 1; i++) {
+		for (int i = 0; i < chars.length; i++) {
 			char c = chars[i];
 			if(c == '(') {
 				if(start != -1) {
 					count++;
 				} else {
 					start = i;
+					System.out.println("start: " + i);
 				}
 			} else if (c == ')') {
 				if(start != -1) {
-					if(count > 0) {
+					if(count > 1) {
 						count--;
 					} else {
 						end = i;
+						System.out.println("end: " + i);
 						break;
 					}
 				} else {
@@ -139,19 +170,43 @@ public class SimpleExpressionParser implements ExpressionParser {
 			return null;
 		}
 
-		if(end == -1) {
+		if(end != -1) {
 			// (S)
-			return parseS(str);
+			System.out.println("(S)");
+			Operator op = new Operator("()");
+			String s = str.substring(start + 1, end);
+			System.out.println(s);
+			Expression e = parseS(str.substring(start + 1, end));
+			if(e == null) {
+				return null;
+			}
+			e.setParent(op);
+			op.addSubexpression(e);
+			return op;
 		} else {
-			// L
-			// TODO: check ascii
 			for(int ascii : chars) {
-				// if not [a-z] || [A-Z] || [0-9]
-				if(!(((ascii >= 97 && ascii <= 122) || (ascii >= 65 && ascii <= 90)) || (ascii >= 48 && ascii <= 57))){
-					return null;
+				if (ascii >= 40 && ascii <= 43) {
+					// S
+					System.out.println("S");
+					return parseS(str);
 				}
 			}
-			return new Literal(str);
+
+			// L
+			System.out.println("L");
+			return parseL(str);
 		}
+	}
+
+	public Expression parseL(String str) {
+		// L
+		char[] chars = str.toCharArray();
+		for(int ascii : chars) {
+			// if not [a-z] || [A-Z] || [0-9]
+			if(!(((ascii >= 97 && ascii <= 122) || (ascii >= 65 && ascii <= 90)) || (ascii >= 48 && ascii <= 57))){
+				return null;
+			}
+		}
+		return new Literal(str);
 	}
 }

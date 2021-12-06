@@ -1,26 +1,37 @@
+import java.util.ArrayList;
+import java.util.List;
+
 public class Operator implements CompoundExpression {
-    private char _identifier;
-    public Operator (char identifier) {
+    private String _identifier;
+    private Operator _parent;
+    private List<Expression> _subexpresions;
+
+    public Operator (String identifier) {
         _identifier = identifier;
+        _subexpresions = new ArrayList<>();
     }
 
-    public char getIdentifier() {
+    public String getIdentifier() {
         return _identifier;
     }
 
     @Override
     public void addSubexpression(Expression subexpression) {
+        _subexpresions.add(subexpression);
+    }
 
+    public void removeSubexpression(Expression subexpression) {
+        _subexpresions.remove(subexpression);
     }
 
     @Override
     public CompoundExpression getParent() {
-        return null;
+        return _parent;
     }
 
     @Override
     public void setParent(CompoundExpression parent) {
-
+        _parent = (Operator) parent;
     }
 
     @Override
@@ -30,11 +41,33 @@ public class Operator implements CompoundExpression {
 
     @Override
     public void flatten() {
+        for(Expression e : _subexpresions) {
+            e.flatten();
+        }
+        if(_parent != null && _parent.getIdentifier().equals(getIdentifier())) {
+            for(Expression e : _subexpresions) {
+                _parent.addSubexpression(e);
+                e.setParent(_parent);
 
+                removeSubexpression(this);
+            }
+        }
     }
 
     @Override
     public String convertToString(int indentLevel) {
-        return null;
+        StringBuffer s = new StringBuffer();
+
+        Expression.indent(s, indentLevel);
+        s.append(_identifier);
+
+        indentLevel += 1;
+        for(Expression e : _subexpresions) {
+            s.append("\n");
+            s.append(e.convertToString(indentLevel));
+        }
+        // TODO: fix new line addition
+        s.append("\n");
+        return s.toString();
     }
 }

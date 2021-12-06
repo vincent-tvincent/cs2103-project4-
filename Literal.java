@@ -1,17 +1,19 @@
 public class Literal implements Expression{
     private String _data;
+    private CompoundExpression _parent;
+
     public Literal(String data) {
         _data = data;
     }
 
     @Override
     public CompoundExpression getParent() {
-        return null;
+        return _parent;
     }
 
     @Override
     public void setParent(CompoundExpression parent) {
-
+        _parent = parent;
     }
 
     @Override
@@ -26,6 +28,9 @@ public class Literal implements Expression{
 
     @Override
     public String convertToString(int indentLevel) {
-        return null;
+        StringBuffer s = new StringBuffer();
+        Expression.indent(s, indentLevel);
+        s.append(_data);
+        return s.toString();
     }
 }
