@@ -1,9 +1,16 @@
 public class L extends abstractExpression{
     String item;
-    public L (abstractCompoundExpression parent, String item){
+    public L(abstractCompoundExpression parent, String item){
         super(parent);
         ExpressionType = "L";
         this.item = item;
+        output = new StringBuffer(item);
+    }
+    public L(abstractCompoundExpression parent, String item,int indent){
+        super(parent,indent);
+        ExpressionType = "L";
+        this.item = item;
+        output = new StringBuffer(item);
     }
 
     @Override
@@ -13,13 +20,13 @@ public class L extends abstractExpression{
 
     @Override
     public void flatten() {
-        System.out.print(item);
+        System.out.println(convertToString(indent));
     }
 
     @Override
     public String convertToString(int indentLevel) {
-
-        return Expression.indent(,indentLevel) + item ;
+        Expression.indent(output,indentLevel);
+        return output.toString();
     }
 
 }

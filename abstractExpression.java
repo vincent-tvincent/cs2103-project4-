@@ -1,8 +1,16 @@
 public abstract class abstractExpression implements Expression{
     private abstractCompoundExpression ParentExpression;
-    public String ExpressionType;
+    String ExpressionType;
+    StringBuffer output;
+    public int indent;
     public abstractExpression(CompoundExpression parent){
         ParentExpression = (abstractCompoundExpression) parent;
+        indent = 1;
+    }
+
+    public abstractExpression(CompoundExpression parent,int indent){
+        ParentExpression = (abstractCompoundExpression) parent;
+        this.indent = indent;
     }
 
     public CompoundExpression getParent(){

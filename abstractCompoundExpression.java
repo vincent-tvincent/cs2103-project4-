@@ -1,13 +1,20 @@
 import java.util.HashMap;
 public abstract class abstractCompoundExpression extends abstractExpression implements CompoundExpression{
     private HashMap<String,Expression> subExpressions;
-    public abstractCompoundExpression(abstractCompoundExpression parent, abstractExpression subExpression){
-        super(parent);
-        subExpressions.put(subExpression.ExpressionType, subExpression);
-    }
-
     public abstractCompoundExpression(abstractCompoundExpression parent){
         super(parent);
+    }
+
+    public abstractCompoundExpression(){
+        super(null);
+    }
+
+    public abstractCompoundExpression(abstractCompoundExpression parent, int indent){
+        super(parent,indent);
+    }
+
+    public abstractCompoundExpression(int indent){
+        super(null,indent);
     }
 
     private void addSubExpressionToList(abstractExpression expression){
