@@ -48,6 +48,9 @@ public class Operator implements CompoundExpression {
         return op;
     }
 
+    /*
+     * removes redundant operators
+     */
     @Override
     public void flatten() {
         Expression[] subArray = new Expression[_subexpresions.size()];
@@ -67,8 +70,12 @@ public class Operator implements CompoundExpression {
         }
     }
 
+    /*
+     * Flattens the tree then prints it
+     */
     @Override
     public String convertToString(int indentLevel) {
+        // flatten before convert
         flatten();
         StringBuffer s = new StringBuffer();
 

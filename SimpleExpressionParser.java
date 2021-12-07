@@ -31,6 +31,9 @@ public class SimpleExpressionParser implements ExpressionParser {
 		return parseS(str);
 	}
 
+	/*
+	* parses summation out of a string or continues the grammar
+	 */
 	private Expression parseS(String str) {
 		char[] chars = str.toCharArray();
 		// find + outside of ()
@@ -42,6 +45,7 @@ public class SimpleExpressionParser implements ExpressionParser {
 				pDepth++;
 			} else if(c == ')') {
 				pDepth--;
+				// if out of place ) return null
 				if(pDepth < 0) {
 					return null;
 				}
@@ -59,8 +63,9 @@ public class SimpleExpressionParser implements ExpressionParser {
 			}
 		}
 
+		// no plus found
 		if(plus == -1) {
-			// M
+			// try M
 			System.out.println("M");
 			return parseM(str);
 		} else {
@@ -75,6 +80,7 @@ public class SimpleExpressionParser implements ExpressionParser {
 			Expression first = parseS(s1);
 			Expression second = parseM(s2);
 
+			// if either sub parsed expression returns null
 			if(first == null || second == null) {
 				return null;
 			}
@@ -89,31 +95,42 @@ public class SimpleExpressionParser implements ExpressionParser {
 		}
 	}
 
+	/*
+	 * parses multiplication out of a string or continues the grammar
+	 */
 	private Expression parseM(String str) {
 
 		char[] chars = str.toCharArray();
 		// find * outside of ();
 		int mult = -1;
 		int pDepth = 0;
-		for (int i = 0; i < chars.length - 1; i++) {
+		for (int i = 0; i < chars.length; i++) {
 			char c = chars[i];
 			if(c == '(') {
 				pDepth++;
 			} else if(c == ')') {
 				pDepth--;
+				// if out of place ) return null
 				if(pDepth < 0) {
 					return null;
 				}
 			} else if(c == '*') {
 				if(pDepth == 0) {
 					mult = i;
+
+					// if * has nothing to left or right
+					if(i == 0 || i == chars.length - 1) {
+						return null;
+					}
+
 					break;
 				}
 			}
 		}
 
+		// if no *
 		if(mult == -1) {
-			// P
+			// try P
 			System.out.println("P");
 			return parseP(str);
 		} else {
@@ -127,6 +144,8 @@ public class SimpleExpressionParser implements ExpressionParser {
 			System.out.println("S2:" + s2);
 			Expression first = parseS(s1);
 			Expression second = parseM(s2);
+
+			// if either sub parsed expression returns null
 			if(first == null || second == null) {
 				return null;
 			}
@@ -141,6 +160,9 @@ public class SimpleExpressionParser implements ExpressionParser {
 		}
 	}
 
+	/*
+	 * parses parenthesis out of a string or continues the grammar
+	 */
 	private Expression parseP(String str) {
 
 		char[] chars = str.toCharArray();
@@ -168,18 +190,21 @@ public class SimpleExpressionParser implements ExpressionParser {
 						break;
 					}
 				} else {
+					// out of place )
 					return null;
 				}
 			}
 		}
 
+		// if no end or if empty
 		if(start != -1 && end == -1 || start == end -1) {
 			return null;
 		}
 
 		if(end != -1) {
+			// if there are more characters
 			if(end != chars.length - 1) {
-				// (S) + S
+				// try (S) + S
 				System.out.println("(S)+S");
 
 				char next = chars[end + 1];
@@ -188,23 +213,25 @@ public class SimpleExpressionParser implements ExpressionParser {
 				}
 
 				return parseS(str.substring(start));
-			}
+			} else {
 
-			// (S)
-			System.out.println("(S)");
-			Operator op = new Operator("()");
-			String s = str.substring(start + 1, end);
-			System.out.println(s);
-			Expression e = parseS(str.substring(start + 1, end));
-			if(e == null) {
-				return null;
-			}
-			e.setParent(op);
-			op.addSubexpression(e);
+				// (S)
+				System.out.println("(S)");
+				Operator op = new Operator("()");
+				String s = str.substring(start + 1, end);
+				System.out.println(s);
+				Expression e = parseS(str.substring(start + 1, end));
+				if (e == null) {
+					return null;
+				}
+				e.setParent(op);
+				op.addSubexpression(e);
 
-			return op;
+				return op;
+			}
 		} else {
 			for(int ascii : chars) {
+				// if there are + * or (), continue
 				if (ascii >= 40 && ascii <= 43) {
 					// S
 					System.out.println("S");
@@ -218,6 +245,9 @@ public class SimpleExpressionParser implements ExpressionParser {
 		}
 	}
 
+	/*
+	 * parses literal out of a string or returns null if it finds illegal characters
+	 */
 	public Expression parseL(String str) {
 		// L
 		char[] chars = str.toCharArray();

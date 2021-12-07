@@ -23,6 +23,7 @@ public class Literal implements Expression{
         return l;
     }
 
+    // a literal will never have sub expressions
     @Override
     public void flatten() {
 
