@@ -18,7 +18,9 @@ public class Literal implements Expression{
 
     @Override
     public Expression deepCopy() {
-        return null;
+        Literal l = new Literal(_data);
+        l.setParent(_parent);
+        return l;
     }
 
     @Override

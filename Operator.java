@@ -36,7 +36,16 @@ public class Operator implements CompoundExpression {
 
     @Override
     public Expression deepCopy() {
-        return null;
+        Operator op = new Operator(_identifier);
+        op.setParent(_parent);
+
+        Expression[] subArray = new Expression[_subexpresions.size()];
+        _subexpresions.toArray(subArray);
+
+        for (int i = 0; i < subArray.length; i++) {
+            op.addSubexpression(subArray[i]);
+        }
+        return op;
     }
 
     @Override
